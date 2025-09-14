@@ -12,11 +12,11 @@ Script distro-agnostic para gerenciar múltiplas instâncias do MEGASync em dife
 
 ## Distribuições Suportadas
 
-| Distribuição | Gerenciador | Pacotes |
-|-------------|-------------|---------|
-| **Debian/Ubuntu/Mint/Pop!_OS/Zorin** | `apt` | `megasync`, `zenity` |
-| **Fedora/RHEL/CentOS** | `dnf` | `megasync`, `zenity` |
-| **Arch/Manjaro/EndeavourOS** | `pacman` | `megasync`, `zenity` |
+| Distribuição | Gerenciador | Pacotes | Funcionando? | 
+|--------------|-------------|---------|--------------|
+| **Debian/Ubuntu/Mint/Pop!_OS/Zorin** | `apt` | `megasync`, `zenity` | Testado (Ubuntu, Mint)|
+| **Fedora/RHEL/CentOS** | `dnf` | `megasync`, `zenity` | Testado (Fedora 42)|
+| **Arch/Manjaro/EndeavourOS** | `pacman` | `megasync`, `zenity` | Não Testado |
 
 ## Instalação
 
