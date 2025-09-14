@@ -83,16 +83,21 @@ if [[ "$1" == "install" ]]; then
     INSTALL_PATH="$HOME/megasync-manager.sh"
     ALIAS_CMD="alias mega='bash $INSTALL_PATH'"
     BASH_ALIASES="$HOME/.bash_aliases"
-    
+
     if [ -f "$INSTALL_PATH" ]; then
         msg already_installed
     else
         msg copying_script
-        cp "$0" "$INSTALL_PATH"
+        # If $0 is a readable file, copy it. Otherwise, read from stdin.
+        if [ -r "$0" ] && [ "$0" != "bash" ]; then
+            cp "$0" "$INSTALL_PATH"
+        else
+            cat > "$INSTALL_PATH" <&0
+        fi
         msg chmod_script
         chmod +x "$INSTALL_PATH"
     fi
-    
+
     # Add alias if not present
     if ! grep -q "alias mega=" "$BASH_ALIASES" 2>/dev/null; then
         echo "$ALIAS_CMD" >> "$BASH_ALIASES"
