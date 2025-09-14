@@ -1,5 +1,73 @@
 # MEGASync Multi-Instance Manager
 
+Script distro-agn- **Persistência**: Instâncias adicionadas são salvas automaticamente
+
+## Navegação na Interface
+
+A interface gráfica foi projetada para ser intuitiva e oferecer controle total ao usuário:
+
+### Menu Principal:
+- **"Iniciar Selecionadas"**: Inicia as instâncias marcadas
+- **"Sair"**: Fecha o programa
+- **Opções especiais**: "Adicionar nova instância..." e "Configurar inicialização automática..."
+
+### Configuração de Inicialização Automática:
+- **"Aplicar"**: Salva as alterações e retorna ao menu principal
+- **"Voltar"**: Retorna ao menu principal sem salvar alterações
+- **"Cancelar"**: Fecha a janela sem fazer alterações
+
+### Adicionar Nova Instância:
+- **"Próximo"**: Avança para configurar o caminho
+- **"Voltar"**: Retorna ao menu principal
+- **"Cancelar"**: Fecha a janela
+
+### Navegação Inteligente:
+- Botões de "Voltar" permitem retornar etapas anteriores
+- Cancelamento seguro em qualquer momento
+- Confirmação de ações importantes
+
+## Distribuições Suportadasic para gerenciar múltiplas instâncias do MEGASync em diferentes contas MEGA.
+
+## Características
+
+- **Distro-Agnostic**: Funciona automaticamente em Debian, Ubuntu, Fedora e Arch Linux
+- **Interface Gráfica**: Usa Zenity para uma experiência amigável com janelas dimensionadas adequadamente e navegação intuitiva
+- **Instâncias Isoladas**: Cada instância tem seu próprio diretório de configuração
+- **Gerenciamento Dinâmico**: Adicione novas instâncias diretamente pela interface
+- **Persistência**: Instâncias adicionadas são salvas automaticamente
+- **Inicialização Automática**: Configure quais instâncias iniciam com o sistema
+
+## Distribuições Suportadas
+
+O script permite configurar quais instâncias do MEGASync devem iniciar automaticamente quando você faz login no sistema.
+
+### Como configurar:
+
+1. Execute o script normalmente
+2. Selecione "Configurar inicialização automática..."
+3. Marque/desmarque as instâncias desejadas
+4. As configurações são aplicadas imediatamente
+
+### Como funciona:
+
+- Cria arquivos `.desktop` no diretório `~/.config/autostart/`
+- Cada instância tem seu próprio arquivo de configuração
+- Funciona com qualquer ambiente desktop que suporte XDG Autostart
+- As instâncias são isoladas e usam seus próprios diretórios de configuração
+
+### Gerenciar configurações:
+
+- **Ativar**: Marque a instância na lista de configuração
+- **Desativar**: Desmarque a instância na lista de configuração
+- **Verificar status**: O status atual é mostrado na lista (Ativado/Desativado)
+
+## Nomenclatura Recomendada*: Funciona automaticamente em Debian, Ubuntu, Fedora e Arch Linux
+- **Interface Gráfica**: Usa Zenity para uma experiência amigável
+- **Instâncias Isoladas**: Cada instância tem seu próprio diretório de configuração
+- **Gerenciamento Dinâmico**: Adicione novas instâncias diretamente pela interface
+- **Persistência**: Instâncias adicionadas são salvas automaticamente
+- **Inicialização Automática**: Configure quais instâncias iniciam com o sistemaMulti-Instance Manager
+
 Script distro-agnostic para gerenciar múltiplas instâncias do MEGASync em diferentes contas MEGA.
 
 ## Características
@@ -12,11 +80,11 @@ Script distro-agnostic para gerenciar múltiplas instâncias do MEGASync em dife
 
 ## Distribuições Suportadas
 
-| Distribuição | Gerenciador | Pacotes | Funcionando? | 
+| Distribuição | Gerenciador | Pacotes | Funcionando? |
 |--------------|-------------|---------|--------------|
-| **Debian/Ubuntu/Mint/Pop!_OS/Zorin** | `apt` | `megasync`, `zenity` | Testado (Ubuntu, Mint)|
-| **Fedora/RHEL/CentOS** | `dnf` | `megasync`, `zenity` | Testado (Fedora 42)|
-| **Arch/Manjaro/EndeavourOS** | `pacman` | `megasync`, `zenity` | Não Testado |
+| **Debian/Ubuntu/Mint/Pop!_OS/Zorin** | `apt` | `megasync`, `zenity` | Sim |
+| **Fedora/RHEL/CentOS** | `dnf` | `megasync`, `zenity` | Sim |
+| **Arch/Manjaro/EndeavourOS** | `pacman` | `megasync`, `zenity` | Não testado |
 
 ## Instalação
 
@@ -82,9 +150,23 @@ Certifique-se de que:
 - O Zenity está instalado
 - As variáveis de ambiente DISPLAY estão configuradas
 
-## Licença
+### Inicialização Automática
+Se as instâncias não estiverem iniciando automaticamente:
 
-Este script é distribuído sob a licença MIT. Use por sua conta e risco.
+- **Verifique os arquivos**: Os arquivos `.desktop` devem estar em `~/.config/autostart/`
+- **Permissões**: Certifique-se de que os arquivos têm permissão de execução
+- **Ambiente Desktop**: Alguns ambientes podem ignorar arquivos `.desktop` corrompidos
+- **Teste manual**: Execute o arquivo `.desktop` manualmente para testar
+- **Logs**: Verifique os logs do sistema para mensagens de erro
+
+### Comando para testar:
+```bash
+# Listar arquivos de inicialização
+ls -la ~/.config/autostart/megasync-*
+
+# Executar manualmente um arquivo .desktop
+gtk-launch ~/.config/autostart/megasync-MEGASync_Instance_1.desktop
+```
 
 ## Contribuições
 
