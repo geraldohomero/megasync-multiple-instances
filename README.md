@@ -92,7 +92,7 @@ Script distro-agnostic para gerenciar múltiplas instâncias do MEGASync em dife
 Execute o comando abaixo no terminal para instalar e configurar o alias automaticamente:
 
 ```bash
-wget -O - https://raw.githubusercontent.com/geraldohomero/megasync_multiple_instances/main/megasync-manager.sh | bash -s install
+wget -O - https://raw.githubusercontent.com/geraldohomero/megasync_multiple_instances/refs/heads/main/megasync-manager.sh | bash -s install
 ```
 
 Após a instalação, basta usar o comando:
