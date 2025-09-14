@@ -126,7 +126,7 @@ if [[ "$1" == "install" ]]; then
     msg sourcing_alias
     source "$BASH_ALIASES" 2>/dev/null
     msg install_success
-    exit 0
+    exec bash
 fi
 
 detect_lang
