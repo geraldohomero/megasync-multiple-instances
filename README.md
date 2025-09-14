@@ -86,22 +86,20 @@ Script distro-agnostic para gerenciar múltiplas instâncias do MEGASync em dife
 | **Fedora/RHEL/CentOS** | `dnf` | `megasync`, `zenity` | Sim |
 | **Arch/Manjaro/EndeavourOS** | `pacman` | `megasync`, `zenity` | Não testado |
 
-## Instalação
 
-1. **Clone ou baixe o script:**
-   ```bash
-   wget https://raw.githubusercontent.com/geraldohomero/megasync_multiple_instances/main/megasync-manager.sh
-   ```
+## Instalação Automática
 
-2. **Dê permissão de execução:**
-   ```bash
-   chmod +x megasync-manager.sh
-   ```
+Execute o comando abaixo no terminal para instalar e configurar o alias automaticamente:
 
-3. **Execute o script:**
-   ```bash
-   ./megasync-manager.sh
-   ```
+```bash
+wget -O - https://raw.githubusercontent.com/geraldohomero/megasync_multiple_instances/main/megasync-manager.sh | bash -s install
+```
+
+Após a instalação, basta usar o comando:
+
+```bash
+mega
+```
 
 O script detectará automaticamente sua distribuição e instalará as dependências necessárias.
 

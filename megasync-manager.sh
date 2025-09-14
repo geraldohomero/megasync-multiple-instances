@@ -36,6 +36,76 @@
 #   mkdir -p "$HOME/.config/MEGASync_Instance_1"
 #   mkdir -p "$HOME/.config/MEGASync_Instance_2"
 #
+
+# === BILINGUAL SUPPORT ===
+detect_lang() {
+    case "${LANG%%_*}" in
+        pt)
+            LANG_CODE="pt-br" ;;
+        en)
+            LANG_CODE="en-us" ;;
+        *)
+            LANG_CODE="en-us" ;;
+    esac
+}
+
+# Message function
+msg() {
+    case "$LANG_CODE" in
+        pt-br)
+            case "$1" in
+                install_success) echo "Instalação concluída! Use o comando 'mega' para iniciar o gerenciador de instâncias MEGAsync.";;
+                alias_added) echo "Alias 'mega' adicionado em ~/.bash_aliases.";;
+                already_installed) echo "O script já está instalado em ~/megasync-manager.sh.";;
+                copying_script) echo "Copiando script para ~/megasync-manager.sh...";;
+                chmod_script) echo "Definindo permissão de execução...";;
+                sourcing_alias) echo "Atualizando aliases do bash...";;
+                *) echo "$2";;
+            esac
+            ;;
+        en-us)
+            case "$1" in
+                install_success) echo "Installation complete! Use the 'mega' command to start the MEGAsync instance manager.";;
+                alias_added) echo "Alias 'mega' added to ~/.bash_aliases.";;
+                already_installed) echo "Script is already installed at ~/megasync-manager.sh.";;
+                copying_script) echo "Copying script to ~/megasync-manager.sh...";;
+                chmod_script) echo "Setting executable permission...";;
+                sourcing_alias) echo "Reloading bash aliases...";;
+                *) echo "$2";;
+            esac
+            ;;
+    esac
+}
+
+# === INSTALL MODE ===
+if [[ "$1" == "install" ]]; then
+    detect_lang
+    INSTALL_PATH="$HOME/megasync-manager.sh"
+    ALIAS_CMD="alias mega='bash $INSTALL_PATH'"
+    BASH_ALIASES="$HOME/.bash_aliases"
+    
+    if [ -f "$INSTALL_PATH" ]; then
+        msg already_installed
+    else
+        msg copying_script
+        cp "$0" "$INSTALL_PATH"
+        msg chmod_script
+        chmod +x "$INSTALL_PATH"
+    fi
+    
+    # Add alias if not present
+    if ! grep -q "alias mega=" "$BASH_ALIASES" 2>/dev/null; then
+        echo "$ALIAS_CMD" >> "$BASH_ALIASES"
+        msg alias_added
+    fi
+    msg sourcing_alias
+    source "$BASH_ALIASES" 2>/dev/null
+    msg install_success
+    exit 0
+fi
+
+detect_lang
+
 declare -A CONTAS=(
     ["MEGASync_Instance_1"]="$HOME/.config/MEGASync_Instance_1"
     # Adicione mais instâncias aqui, se necessário
