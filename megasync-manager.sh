@@ -1,54 +1,41 @@
 #!/bin/bash
-# Script para iniciar múltiplas instâncias do MEGAsync com contas diferentes
-# DISTRO-AGNOSTIC: Compatível com Debian, Ubuntu, Fedora e Arch Linux
+# Script to start multiple MEGAsync instances with different accounts
+# DISTRO-AGNOSTIC: Compatible with Debian, Ubuntu, Fedora and Arch Linux
 #
-# FUNCIONALIDADES:
-# - Gerenciamento de múltiplas instâncias do MEGASync
-# - Configuração de inicialização automática com o sistema
-# - Interface gráfica intuitiva com Zenity
-# - Detecção automática de distribuição Linux
-# - Instalação automática de dependências
+# FEATURES:
+# - Management of multiple MEGASync instances
+# - Automatic startup configuration with the system
+# - Intuitive graphical interface with Zenity
+# - Automatic distribution detection
+# - Automatic dependency installation
 #
-# Autor: https://github.com/geraldohomero
+# Author: https://github.com/geraldohomero
 #
 # Link: https://github.com/geraldohomero/megasync_multiple_instances
 #
-# DISTRIBUIÇÕES SUPORTADAS:
-# - Debian/Ubuntu/Mint/Pop!_OS/Zorin: apt
+# SUPPORTED DISTRIBUTIONS:
+# - Debian/Ubuntu/Mint/Pop!_OS        if configure_autos        if add_account; then
 # - Fedora/RHEL/CentOS: dnf
 # - Arch/Manjaro/EndeavourOS: pacman (AUR)
 #
-# NOMENCLATURA RECOMENDADA:
-# - Instâncias: MEGASync_Instance_1, MEGASync_Instance_2, MEGASync_Instance_3, etc.
-# - Diretórios: ~/.config/MEGASync_Instance_1, ~/.config/MEGASync_Instance_2, etc.
+# RECOMMENDED NAMING:
+# - Instances: MEGASync_Instance_1, MEGASync_Instance_2, MEGASync_Instance_3, etc.
+# - Directories: ~/.config/MEGASync_Instance_1, ~/.config/MEGASync_Instance_2, etc.
 #
-# Declare um array associativo com os nomes das instâncias e seus diretórios.
-# Formato: ["Nome da Instância"]="caminho/para/o/config"
+# Declare an associative array with instance names and their directories.
+# Format: ["Instance Name"]="config/path"
 #
-# IMPORTANTE: O MEGAsync armazena seus dados de configuração em um diretório.
-# Para usar instâncias diferentes, cada uma DEVE ter seu próprio diretório.
-# Por padrão, o MEGAsync usa ~/.config/MEGAsync.
+# IMPORTANT: MEGAsync stores its configuration data in a directory.
+# To use different instances, each ONE MUST have its own directory.
+# By default, MEGAsync uses ~/.config/MEGAsync.
 #
-# NOMENCLATURA RECOMENDADA:
-# Use nomes descritivos como MEGASync_Instance_1, MEGASync_Instance_2, etc.
-# Crie cópias deste diretório ou diretórios novos para cada instância.
-# Exemplo:
+# RECOMMENDED NAMING:
+# Use descriptive names like MEGASync_Instance_1, MEGASync_Instance_2, etc.
+# Create copies of this directory or new directories for each instance.
+# Example:
 #   mkdir -p "$HOME/.config/MEGASync_Instance_1"
 #   mkdir -p "$HOME/.config/MEGASync_Instance_2"
 #
-
-# === BILINGUAL SUPPORT ===
-detect_lang() {
-    case "${LANG%%_*}" in
-        pt)
-            LANG_CODE="pt-br" ;;
-        en)
-            LANG_CODE="en-us" ;;
-        *)
-            LANG_CODE="en-us" ;;
-    esac
-}
-
 
 # === COLOR OUTPUT ===
 RED='\033[0;31m'
@@ -69,37 +56,20 @@ msg() {
         error|fail|fatal)
             color="$RED" ;;
     esac
-    case "$LANG_CODE" in
-        pt-br)
-            case "$type" in
-                install_success) echo -e "${color}Instalação concluída! Use o comando 'mega' para iniciar o gerenciador de instâncias MEGAsync.${NC}";;
-                alias_added) echo -e "${color}Alias 'mega' adicionado em ~/.bash_aliases.${NC}";;
-                already_installed) echo -e "${color}O script já está instalado em ~/megasync-manager.sh.${NC}";;
-                copying_script) echo -e "${color}Copiando script para ~/megasync-manager.sh...${NC}";;
-                chmod_script) echo -e "${color}Definindo permissão de execução...${NC}";;
-                sourcing_alias) echo -e "${color}Atualizando aliases do bash...${NC}";;
-                error) echo -e "${color}${custom}${NC}";;
-                *) echo -e "${color}${custom}${NC}";;
-            esac
-            ;;
-        en-us)
-            case "$type" in
-                install_success) echo -e "${color}Installation complete! Use the 'mega' command to start the MEGAsync instance manager.${NC}";;
-                alias_added) echo -e "${color}Alias 'mega' added to ~/.bash_aliases.${NC}";;
-                already_installed) echo -e "${color}Script is already installed at ~/megasync-manager.sh.${NC}";;
-                copying_script) echo -e "${color}Copying script to ~/megasync-manager.sh...${NC}";;
-                chmod_script) echo -e "${color}Setting executable permission...${NC}";;
-                sourcing_alias) echo -e "${color}Reloading bash aliases...${NC}";;
-                error) echo -e "${color}${custom}${NC}";;
-                *) echo -e "${color}${custom}${NC}";;
-            esac
-            ;;
+    case "$type" in
+        install_success) echo -e "${color}Installation complete! Use the 'mega' command to start the MEGAsync instance manager.${NC}";;
+        alias_added) echo -e "${color}Alias 'mega' added to ~/.bash_aliases.${NC}";;
+        already_installed) echo -e "${color}Script is already installed at ~/megasync-manager.sh.${NC}";;
+        copying_script) echo -e "${color}Copying script to ~/megasync-manager.sh...${NC}";;
+        chmod_script) echo -e "${color}Setting executable permission...${NC}";;
+        sourcing_alias) echo -e "${color}Reloading bash aliases...${NC}";;
+        error) echo -e "${color}${custom}${NC}";;
+        *) echo -e "${color}${custom}${NC}";;
     esac
 }
 
 # === INSTALL MODE ===
 if [[ "$1" == "install" ]]; then
-    detect_lang
     INSTALL_PATH="$HOME/megasync-manager.sh"
     ALIAS_CMD="alias mega='bash $INSTALL_PATH'"
     BASH_ALIASES="$HOME/.bash_aliases"
@@ -129,17 +99,15 @@ if [[ "$1" == "install" ]]; then
     exec bash
 fi
 
-detect_lang
-
 declare -A CONTAS=(
     ["MEGASync_Instance_1"]="$HOME/.config/MEGASync_Instance_1"
-    # Adicione mais instâncias aqui, se necessário
+    # Add more instances here if necessary
     # ["MEGASync_Instance_2"]="$HOME/.config/MEGASync_Instance_2"
     # ["MEGASync_Instance_3"]="$HOME/.config/MEGASync_Instance_3"
 )
-# --- FIM DA CONFIGURAÇÃO ---
+# --- END OF CONFIGURATION ---
 
-# Detectar distribuição Linux e configurar gerenciador de pacotes
+# Detect Linux distribution and configure package manager
 detect_distro() {
     if [ -f /etc/os-release ]; then
         . /etc/os-release
@@ -154,16 +122,16 @@ detect_distro() {
         DISTRO_NAME=$(lsb_release -d | cut -d: -f2 | tr -d '[:space:]')
     else
         DISTRO_ID="unknown"
-        DISTRO_NAME="Distribuição Desconhecida"
+        DISTRO_NAME="Unknown Distribution"
     fi
     
-    # Converter para lowercase para facilitar comparação
+    # Convert to lowercase for easier comparison
     DISTRO_ID=$(echo "$DISTRO_ID" | tr '[:upper:]' '[:lower:]')
     
-    echo "Distribuição detectada: $DISTRO_NAME"
+    echo "Detected distribution: $DISTRO_NAME"
 }
 
-# Configurar comandos e pacotes baseado na distribuição
+# Configure commands and packages based on distribution
 setup_package_manager() {
     case $DISTRO_ID in
         ubuntu|debian|linuxmint|zorin|pop|elementary|kali|raspbian|mx|antix|pureos)
@@ -185,8 +153,8 @@ setup_package_manager() {
             ZENITY_PACKAGE="zenity"
             ;;
         *)
-            echo "Distribuição não reconhecida: $DISTRO_NAME"
-            echo "Tentando detectar gerenciador de pacotes automaticamente..."
+            echo "Unrecognized distribution: $DISTRO_NAME"
+            echo "Trying to detect package manager automatically..."
             
             if command -v apt &> /dev/null; then
                 PACKAGE_MANAGER="apt"
@@ -204,35 +172,35 @@ setup_package_manager() {
                 MEGASYNC_PACKAGE="megasync"
                 ZENITY_PACKAGE="zenity"
             else
-                echo "ERRO: Não foi possível detectar um gerenciador de pacotes conhecido."
-                echo "Por favor, instale manualmente: megasync e zenity"
+                echo "ERROR: Could not detect a known package manager."
+                echo "Please install manually: megasync and zenity"
                 exit 1
             fi
             ;;
     esac
     
-    echo "Gerenciador de pacotes: $PACKAGE_MANAGER"
+    echo "Package manager: $PACKAGE_MANAGER"
 }
 
-# 1. Verificar e instalar dependências (distro-agnostic)
-# O script detecta automaticamente sua distribuição Linux e usa o gerenciador
-# de pacotes apropriado (apt, dnf, pacman)
+# 1. Check and install dependencies (distro-agnostic)
+# The script automatically detects your Linux distribution and uses the appropriate
+# package manager (apt, dnf, pacman)
 check_and_install() {
     local cmd=$1
     local package_name=$2
     local local_paths=("$HOME/bin/$cmd" "$HOME/local/bin/$cmd" "$HOME/.local/bin/$cmd")
     
-    # Primeiro, verificar se está no PATH
+    # First, check if it's in PATH
     if command -v "$cmd" &> /dev/null; then
-        echo "'$cmd' encontrado no PATH."
+        echo "'$cmd' found in PATH."
         return 0
     fi
     
-    # Verificar caminhos locais comuns
+    # Check common local paths
     for path in "${local_paths[@]}"; do
         if [ -x "$path" ]; then
-            echo "'$cmd' encontrado em: $path"
-            # Definir variável global para o caminho
+            echo "'$cmd' found at: $path"
+            # Set global variable for the path
             if [ "$cmd" = "megasync" ]; then
                 MEGASYNC_CMD="$path"
             elif [ "$cmd" = "zenity" ]; then
@@ -242,35 +210,35 @@ check_and_install() {
         fi
     done
     
-    # Se não encontrou, oferecer instalar
-    echo "A dependência '$cmd' não foi encontrada no PATH nem em caminhos locais comuns."
-    read -p "Deseja instalá-la via $PACKAGE_MANAGER agora? (s/N) " -n 1 -r
+    # If not found, offer to install
+    echo "The dependency '$cmd' was not found in PATH nor in common local paths."
+    read -p "Do you want to install it via $PACKAGE_MANAGER now? (y/N) " -n 1 -r
     echo
-    if [[ $REPLY =~ ^[Ss]$ ]]; then
-        echo "Instalando '$package_name'... Por favor, digite sua senha se solicitado."
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo "Installing '$package_name'... Please enter your password if prompted."
         
-        # Avisos especiais para algumas distribuições
+        # Special warnings for some distributions
         case $DISTRO_ID in
-            # Nenhum aviso especial necessário para as distribuições suportadas
+            # No special warnings needed for supported distributions
         esac
         
         if command -v sudo &> /dev/null; then
             eval "$INSTALL_CMD $package_name"
         else
-            echo "Comando 'sudo' não encontrado. Execute como root ou instale '$package_name' manualmente."
-            echo "Comando sugerido: $INSTALL_CMD $package_name"
+            echo "'sudo' command not found. Execute as root or install '$package_name' manually."
+            echo "Suggested command: $INSTALL_CMD $package_name"
             exit 1
         fi
         
         if ! command -v "$cmd" &> /dev/null; then
-            echo "A instalação falhou. Verifique o nome do pacote ou instale '$package_name' manualmente."
-            echo "Comando sugerido: $INSTALL_CMD $package_name"
+            echo "Installation failed. Check the package name or install '$package_name' manually."
+            echo "Suggested command: $INSTALL_CMD $package_name"
             exit 1
         fi
-        echo "'$package_name' instalado com sucesso."
+        echo "'$package_name' installed successfully."
     else
-        echo "Instalação cancelada. O script não pode continuar sem '$cmd'."
-        echo "Instale manualmente: $INSTALL_CMD $package_name"
+        echo "Installation cancelled. The script cannot continue without '$cmd'."
+        echo "Install manually: $INSTALL_CMD $package_name"
         exit 1
     fi
 }
@@ -280,8 +248,8 @@ detect_distro
 setup_package_manager
 
 echo "=== MEGASync Multi-Instance Manager ==="
-echo "Distribuição: $DISTRO_NAME"
-echo "Gerenciador: $PACKAGE_MANAGER"
+echo "Distribution: $DISTRO_NAME"
+echo "Manager: $PACKAGE_MANAGER"
 echo "========================================"
 echo ""
 
@@ -293,17 +261,17 @@ check_and_install "zenity" "$ZENITY_PACKAGE"
 MEGASYNC_CMD=${MEGASYNC_CMD:-megasync}
 ZENITY_CMD=${ZENITY_CMD:-zenity}
 
-# Arquivo para salvar instâncias adicionadas dinamicamente
-CONTAS_FILE="$HOME/.config/megasync_contas.conf"
+# File to save dynamically added instances
+CONTAS_FILE="$HOME/.config/megasync_accounts.conf"
 
 # Diretório para arquivos de inicialização automática
 AUTOSTART_DIR="$HOME/.config/autostart"
 
-# Carregar instâncias salvas se o arquivo existir
+# Load saved instances if file exists
 if [ -f "$CONTAS_FILE" ]; then
-    while IFS='=' read -r nome caminho; do
-        if [ -n "$nome" ] && [ -n "$caminho" ]; then
-            CONTAS["$nome"]="$caminho"
+    while IFS='=' read -r name path; do
+        if [ -n "$name" ] && [ -n "$path" ]; then
+            CONTAS["$name"]="$path"
         fi
     done < "$CONTAS_FILE"
 fi
@@ -354,66 +322,66 @@ remove_autostart_desktop() {
     [ -f "$desktop_file" ] && rm "$desktop_file"
 }
 
-# Função para configurar inicialização automática
+# Function to configure automatic startup
 configure_autostart() {
-    local title="Configurar Inicialização Automática"
+    local title="Configure Automatic Startup"
     
-    # Construir lista de instâncias com status atual
+    # Build list of instances with current status
     local autostart_options=""
     for instance_name in "${!CONTAS[@]}"; do
         if is_autostart_enabled "$instance_name"; then
-            autostart_options+="TRUE \"$instance_name (Ativado)\" "
+            autostart_options+="TRUE \"$instance_name (Enabled)\" "
         else
-            autostart_options+="FALSE \"$instance_name (Desativado)\" "
+            autostart_options+="FALSE \"$instance_name (Disabled)\" "
         fi
     done
     
-    # Remover trailing space
+    # Remove trailing space
     autostart_options=${autostart_options% }
     
-    # Mostrar diálogo de configuração
+    # Show configuration dialog
     local selections
     selections=$(eval "$ZENITY_CMD --list \
                         --title=\"$title\" \
-                        --text=\"Selecione as instâncias que devem iniciar automaticamente com o sistema:\n\n• Marque as instâncias que deseja ativar\n• Desmarque as que deseja desativar\n• Clique em 'Voltar' para retornar ao menu principal\" \
+                        --text=\"Select the instances that should start automatically with the system:\n\n• Check the instances you want to enable\n• Uncheck the ones you want to disable\n• Click 'Back' to return to the main menu\" \
                         --checklist \
-                        --column=\"Ativar\" \
-                        --column=\"Instância\" \
+                        --column=\"Enable\" \
+                        --column=\"Instance\" \
                         --width=650 --height=500 \
-                        --extra-button=\"Voltar\" \
-                        --ok-label=\"Aplicar\" \
-                        --cancel-label=\"Cancelar\" \
+                        --extra-button=\"Back\" \
+                        --ok-label=\"Apply\" \
+                        --cancel-label=\"Cancel\" \
                         $autostart_options \
                         --separator=\"|\"")
     
     local exit_code=$?
     
-    # Verificar se o usuário clicou em "Voltar" ou cancelou
+    # Check if user clicked "Back" or cancelled
     if [ $exit_code -eq 1 ]; then
-        # Usuário clicou em "Voltar" - retornar ao menu principal
+        # User clicked "Back" - return to main menu
         return 0
     elif [ $exit_code -ne 0 ]; then
-        # Usuário cancelou ou fechou a janela
+        # User cancelled or closed window
         return 1
     fi
     
-    # Processar seleções
+    # Process selections
     IFS='|' read -ra selected_instances <<< "$selections"
     
-    # Extrair apenas os nomes das instâncias (remover "(Ativado)" e "(Desativado)")
+    # Extract only instance names (remove "(Enabled)" and "(Disabled)")
     local instances_to_enable=()
     for selection in "${selected_instances[@]}"; do
-        # Remover sufixos e extrair nome da instância
-        local instance_name=$(echo "$selection" | sed 's/ (Ativado)//' | sed 's/ (Desativado)//')
+        # Remove suffixes and extract instance name
+        local instance_name=$(echo "$selection" | sed 's/ (Enabled)//' | sed 's/ (Disabled)//')
         instances_to_enable+=("$instance_name")
     done
     
-    # Atualizar configuração de inicialização automática
+    # Update automatic startup configuration
     local changes_made=false
     for instance_name in "${!CONTAS[@]}"; do
         local should_enable=false
         
-        # Verificar se esta instância deve ser ativada
+        # Check if this instance should be enabled
         for enabled_instance in "${instances_to_enable[@]}"; do
             if [ "$enabled_instance" = "$instance_name" ]; then
                 should_enable=true
@@ -425,199 +393,199 @@ configure_autostart() {
             if ! is_autostart_enabled "$instance_name"; then
                 create_autostart_desktop "$instance_name" "${CONTAS[$instance_name]}"
                 changes_made=true
-                echo "Inicialização automática ATIVADA para: $instance_name"
+                echo "Automatic startup ENABLED for: $instance_name"
             fi
         else
             if is_autostart_enabled "$instance_name"; then
                 remove_autostart_desktop "$instance_name"
                 changes_made=true
-                echo "Inicialização automática DESATIVADA para: $instance_name"
+                echo "Automatic startup DISABLED for: $instance_name"
             fi
         fi
     done
     
     if $changes_made; then
-        $ZENITY_CMD --info --text="Configuração de inicialização automática atualizada com sucesso!" --width=500 --height=100
+        $ZENITY_CMD --info --text="Automatic startup configuration updated successfully!" --width=500 --height=100
     else
-        $ZENITY_CMD --info --text="Nenhuma alteração foi feita na configuração." --width=500 --height=100
+        $ZENITY_CMD --info --text="No changes were made to the configuration." --width=500 --height=100
     fi
 }
 
-# Função para adicionar nova instância
-adicionar_conta() {
-    # Calcular o próximo número para MEGASync_Instance
+# Function to add new instance
+add_account() {
+    # Calculate the next number for MEGASync_Instance
     numero_conta=1
     while [ "${CONTAS[MEGASync_Instance_$numero_conta]}" ]; do
         ((numero_conta++))
     done
     
-    # Nome padrão da conta
-    nome_padrao="MEGASync_Instance_$numero_conta"
+    # Default account name
+    default_name="MEGASync_Instance_$numero_conta"
     
-    # Diálogo para nome da conta
-    nome_conta=$($ZENITY_CMD --entry \
-                    --title="Adicionar Nova Conta MEGASync" \
-                    --text="Digite o nome da nova conta:\n\n• Deixe em branco ou clique em 'Voltar' para cancelar" \
-                    --entry-text="$nome_padrao" \
+    # Dialog for account name
+    account_name=$($ZENITY_CMD --entry \
+                    --title="Add New MEGASync Account" \
+                    --text="Enter the name of the new account:\n\n• Leave blank or click 'Back' to cancel" \
+                    --entry-text="$default_name" \
                     --width=500 --height=180 \
-                    --extra-button="Voltar" \
-                    --ok-label="Próximo" \
-                    --cancel-label="Cancelar")
+                    --extra-button="Back" \
+                    --ok-label="Next" \
+                    --cancel-label="Cancel")
     
     local exit_code=$?
     
-    # Verificar se o usuário clicou em "Voltar" ou cancelou
-    if [ $exit_code -eq 1 ] || [ $exit_code -ne 0 ] && [ -z "$nome_conta" ]; then
+    # Check if user clicked "Back" or cancelled
+    if [ $exit_code -eq 1 ] || [ $exit_code -ne 0 ] && [ -z "$account_name" ]; then
         return 1
     fi
     
-    # Verificar se já existe
-    if [ "${CONTAS[$nome_conta]}" ]; then
-        $ZENITY_CMD --error --text="Uma instância com esse nome já existe!" --width=400 --height=100
+    # Check if it already exists
+    if [ "${CONTAS[$account_name]}" ]; then
+        $ZENITY_CMD --error --text="An instance with this name already exists!" --width=400 --height=100
         return 1
     fi
     
-    # Caminho padrão baseado no nome da conta
-    caminho_padrao="$HOME/.config/MEGASync_Instance_$numero_conta"
+    # Default path based on account name
+    default_path="$HOME/.config/MEGASync_Instance_$numero_conta"
     
-    # Diálogo para caminho do config
-    caminho_config=$($ZENITY_CMD --entry \
-                        --title="Caminho de Configuração" \
-                        --text="Digite o caminho para o diretório de configuração:\n\n• Clique em 'Voltar' para retornar e alterar o nome\n• Deixe em branco para cancelar" \
-                        --entry-text="$caminho_padrao" \
+    # Dialog for config path
+    config_path=$($ZENITY_CMD --entry \
+                        --title="Configuration Path" \
+                        --text="Enter the path for the configuration directory:\n\n• Click 'Back' to return and change the name\n• Leave blank to cancel" \
+                        --entry-text="$default_path" \
                         --width=600 --height=180 \
-                        --extra-button="Voltar" \
-                        --ok-label="Criar Instância" \
-                        --cancel-label="Cancelar")
+                        --extra-button="Back" \
+                        --ok-label="Create Instance" \
+                        --cancel-label="Cancel")
     
     local exit_code=$?
     
-    # Verificar se o usuário clicou em "Voltar" ou cancelou
+    # Check if user clicked "Back" or cancelled
     if [ $exit_code -eq 1 ]; then
-        # Usuário clicou em "Voltar" - retornar para alterar o nome
-        adicionar_conta
+        # User clicked "Back" - return to change name
+        add_account
         return $?
-    elif [ $exit_code -ne 0 ] || [ -z "$caminho_config" ]; then
+    elif [ $exit_code -ne 0 ] || [ -z "$config_path" ]; then
         return 1
     fi
     
-    # Adicionar ao array
-    CONTAS["$nome_conta"]="$caminho_config"
+    # Add to array
+    CONTAS["$account_name"]="$config_path"
     
-    # Salvar no arquivo
-    echo "$nome_conta=$caminho_config" >> "$CONTAS_FILE"
+    # Save to file
+    echo "$account_name=$config_path" >> "$CONTAS_FILE"
     
-    $ZENITY_CMD --info --text="Instância '$nome_conta' adicionada com sucesso!" --width=400 --height=100
+    $ZENITY_CMD --info --text="Instance '$account_name' added successfully!" --width=400 --height=100
     return 0
 }
 
-# 2. Construir os argumentos para o diálogo do zenity
+# 2. Build arguments for zenity dialog
 zenity_args=()
-for nome_conta in "${!CONTAS[@]}"; do
-    zenity_args+=(FALSE "$nome_conta")
+for account_name in "${!CONTAS[@]}"; do
+    zenity_args+=(FALSE "$account_name")
 done
-# Adicionar opção de adicionar nova instância
-zenity_args+=(FALSE "Adicionar nova instância...")
-# Adicionar opção de configurar inicialização automática
-zenity_args+=(FALSE "Configurar inicialização automática...")
+# Add option to add new instance
+zenity_args+=(FALSE "Add new instance...")
+# Add option to configure automatic startup
+zenity_args+=(FALSE "Configure automatic startup...")
 
-# Loop principal para seleção de contas
+# Main loop for instance selection
 while true; do
-    # 3. Exibir o diálogo de lista de verificação para o usuário
+    # 3. Display the checklist dialog for the user
     escolhas=$($ZENITY_CMD --list \
-                    --title="Gerenciador de Instâncias MEGASync" \
-                    --text="Quais instâncias do MEGASync você deseja iniciar?\n\nSelecione 'Adicionar nova instância...' para criar uma nova instância.\nSelecione 'Configurar inicialização automática...' para gerenciar inicialização com o sistema.\n\n• Use 'OK' para iniciar as instâncias selecionadas\n• Use 'Cancelar' para sair do programa" \
+                    --title="MEGASync Instance Manager" \
+                    --text="Which MEGASync instances do you want to start?\n\nSelect 'Add new instance...' to create a new instance.\nSelect 'Configure automatic startup...' to manage system startup.\n\n• Use 'Ok' to start the selected instances\n• Use 'Exit' to exit the program" \
                     --checklist \
-                    --column="Marcar" --column="Instância" \
+                    --column="Select" --column="Instance" \
                     --width=650 --height=500 \
-                    --ok-label="Iniciar Selecionadas" \
-                    --cancel-label="Sair" \
+                    --ok-label="Ok" \
+                    --cancel-label="Exit" \
                     "${zenity_args[@]}" \
                     --separator="|")
 
-    # Verificar se o usuário cancelou
+    # Check if user cancelled
     if [ $? -ne 0 ]; then
-        echo "Nenhuma instância selecionada. Saindo."
+        echo "No instances selected. Exiting."
         exit 0
     fi
 
-    # 4. Processar as escolhas
-    IFS='|' read -ra contas_selecionadas <<< "$escolhas"
+    # 4. Process choices
+    IFS='|' read -ra selected_accounts <<< "$escolhas"
 
-    # Verificar se "Adicionar nova instância" foi selecionada
-    adicionar_selecionada=false
-    configurar_autostart_selecionada=false
+    # Check if "Add new instance" was selected
+    add_selected=false
+    configure_autostart_selected=false
     
-    for conta in "${contas_selecionadas[@]}"; do
-        if [ "$conta" = "Adicionar nova instância..." ]; then
-            adicionar_selecionada=true
-        elif [ "$conta" = "Configurar inicialização automática..." ]; then
-            configurar_autostart_selecionada=true
+    for account in "${selected_accounts[@]}"; do
+        if [ "$account" = "Add new instance..." ]; then
+            add_selected=true
+        elif [ "$account" = "Configure automatic startup..." ]; then
+            configure_autostart_selected=true
         fi
     done
 
-    if [ "$configurar_autostart_selecionada" = true ]; then
-        # Remover "Configurar inicialização automática" da lista de selecionadas
-        contas_selecionadas=("${contas_selecionadas[@]/Configurar inicialização automática...}")
+    if [ "$configure_autostart_selected" = true ]; then
+        # Remove "Configure automatic startup" from selected list
+        selected_accounts=("${selected_accounts[@]/Configure automatic startup...}")
         
-        # Configurar inicialização automática
+        # Configure automatic startup
         if configure_autostart; then
-            # Reconstruir a lista com a nova instância
+            # Rebuild list with new instance
             zenity_args=()
-            for nome_conta in "${!CONTAS[@]}"; do
-                zenity_args+=(FALSE "$nome_conta")
+            for account_name in "${!CONTAS[@]}"; do
+                zenity_args+=(FALSE "$account_name")
             done
-            zenity_args+=(FALSE "Adicionar nova instância...")
-            zenity_args+=(FALSE "Configurar inicialização automática...")
-            continue  # Voltar ao loop para mostrar a lista atualizada
+            zenity_args+=(FALSE "Add new instance...")
+            zenity_args+=(FALSE "Configure automatic startup...")
+            continue  # Return to loop to show updated list
         fi
     fi
 
-    if [ "$adicionar_selecionada" = true ]; then
-        # Remover "Adicionar nova instância" da lista de selecionadas
-        contas_selecionadas=("${contas_selecionadas[@]/Adicionar nova instância...}")
+    if [ "$add_selected" = true ]; then
+        # Remove "Add new instance" from selected list
+        selected_accounts=("${selected_accounts[@]/Add new instance...}")
         
-        # Adicionar nova conta
-        if adicionar_conta; then
-            # Reconstruir a lista com a nova instância
+        # Add new account
+        if add_account; then
+            # Rebuild list with new instance
             zenity_args=()
-            for nome_conta in "${!CONTAS[@]}"; do
-                zenity_args+=(FALSE "$nome_conta")
+            for account_name in "${!CONTAS[@]}"; do
+                zenity_args+=(FALSE "$account_name")
             done
-            zenity_args+=(FALSE "Adicionar nova instância...")
-            zenity_args+=(FALSE "Configurar inicialização automática...")
-            continue  # Voltar ao loop para mostrar a lista atualizada
+            zenity_args+=(FALSE "Add new instance...")
+            zenity_args+=(FALSE "Configure automatic startup...")
+            continue  # Return to loop to show updated list
         fi
     fi
 
-    # Se não há contas selecionadas (apenas "Adicionar nova conta" foi removida)
-    if [ ${#contas_selecionadas[@]} -eq 0 ]; then
+    # If no accounts selected (only "Add new account" was removed)
+    if [ ${#selected_accounts[@]} -eq 0 ]; then
         continue
     fi
 
-    # Prosseguir com as contas selecionadas
+    # Proceed with selected accounts
     break
 done
 
-# 5. Iniciar o MEGAsync para cada instância selecionada
-for conta in "${contas_selecionadas[@]}"; do
+# 5. Start MEGASync for each selected instance
+for account in "${selected_accounts[@]}"; do
     config_path="${CONTAS[$conta]}"
     
     if [ -n "$config_path" ]; then
-        echo "Iniciando MEGAsync para a instância: $conta"
+        echo "Starting MEGASync for instance: $conta"
         
-        # Cria o diretório de configuração se não existir
+        # Create configuration directory if it doesn't exist
         mkdir -p "$config_path"
         
-        # Inicia o MEGAsync em segundo plano, definindo a variável HOME
-        # para que ele use o diretório de configuração correto.
-        # Esta é a forma recomendada para isolar as instâncias.
+        # Start MEGASync in background, setting HOME variable
+        # to use the correct configuration directory.
+        # This is the recommended way to isolate instances.
         (HOME="$config_path" "$MEGASYNC_CMD" &)
         
-        $ZENITY_CMD --notification --text="MEGASync '$conta' iniciado." --timeout=3
+        $ZENITY_CMD --notification --text="MEGASync '$conta' started." --timeout=3
     else
-        $ZENITY_CMD --error --text="Configuração não encontrada para a instância: $conta" --width=500 --height=100
+        $ZENITY_CMD --error --text="Configuration not found for instance: $conta" --width=500 --height=100
     fi
 done
 
-echo "Processo concluído."
+echo "Process completed."

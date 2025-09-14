@@ -1,182 +1,184 @@
 # MEGASync Multi-Instance Manager
 
-**Persistência**: Instâncias adicionadas são salvas automaticamente
+**Persistence**: Added instances are automatically saved
 
-## Navegação na Interface
+## Interface Navigation
 
-A interface gráfica foi projetada para ser intuitiva e oferecer controle total ao usuário:
+The graphical interface is designed to be intuitive and provide full user control:
 
-### Menu Principal:
-- **"Iniciar Selecionadas"**: Inicia as instâncias marcadas
-- **"Sair"**: Fecha o programa
-- **Opções especiais**: "Adicionar nova instância..." e "Configurar inicialização automática..."
+### Main Menu:
+- **"Start Selected"**: Starts the marked instances
+- **"Exit"**: Closes the program
+- **Special options**: "Add new instance..." and "Configure automatic startup..."
 
-### Configuração de Inicialização Automática:
-- **"Aplicar"**: Salva as alterações e retorna ao menu principal
-- **"Voltar"**: Retorna ao menu principal sem salvar alterações
-- **"Cancelar"**: Fecha a janela sem fazer alterações
+### Automatic Startup Configuration:
+- **"Apply"**: Saves changes and returns to main menu
+- **"Back"**: Returns to main menu without saving changes
+- **"Cancel"**: Closes window without making changes
 
-### Adicionar Nova Instância:
-- **"Próximo"**: Avança para configurar o caminho
-- **"Voltar"**: Retorna ao menu principal
-- **"Cancelar"**: Fecha a janela
+### Add New Instance:
+- **"Next"**: Advances to configure the path
+- **"Back"**: Returns to main menu
+- **"Cancel"**: Closes window
 
-### Navegação Inteligente:
-- Botões de "Voltar" permitem retornar etapas anteriores
-- Cancelamento seguro em qualquer momento
-- Confirmação de ações importantes
+### Smart Navigation:
+- "Back" buttons allow returning to previous steps
+- Safe cancellation at any time
+- Confirmation of important actions
 
-## Distribuições Suportadasic para gerenciar múltiplas instâncias do MEGASync em diferentes contas MEGA.
+## Supported Distributions for managing multiple MEGASync instances on different MEGA accounts.
 
-## Características
+## Features
 
-- **Distro-Agnostic**: Funciona automaticamente em Debian, Ubuntu, Fedora e Arch Linux
-- **Interface Gráfica**: Usa Zenity para uma experiência amigável com janelas dimensionadas adequadamente e navegação intuitiva
-- **Instâncias Isoladas**: Cada instância tem seu próprio diretório de configuração
-- **Gerenciamento Dinâmico**: Adicione novas instâncias diretamente pela interface
-- **Persistência**: Instâncias adicionadas são salvas automaticamente
-- **Inicialização Automática**: Configure quais instâncias iniciam com o sistema
+- **Distro-Agnostic**: Works automatically on Debian, Ubuntu, Fedora and Arch Linux
+- **Graphical Interface**: Uses Zenity for a user-friendly experience with appropriately sized windows and intuitive navigation
+- **Isolated Instances**: Each instance has its own configuration directory
+- **Dynamic Management**: Add new instances directly through the interface
+- **Persistence**: Added instances are automatically saved
+- **Automatic Startup**: Configure which instances start with the system
 
-## Distribuições Suportadas
+## Supported Distributions
 
-O script permite configurar quais instâncias do MEGASync devem iniciar automaticamente quando você faz login no sistema.
+The script allows configuring which MEGASync instances should start automatically when you log into the system.
 
-### Como configurar:
+### How to configure:
 
-1. Execute o script normalmente
-2. Selecione "Configurar inicialização automática..."
-3. Marque/desmarque as instâncias desejadas
-4. As configurações são aplicadas imediatamente
+1. Run the script normally
+2. Select "Configure automatic startup..."
+3. Check/uncheck the desired instances
+4. Configurations are applied immediately
 
-### Como funciona:
+### How it works:
 
-- Cria arquivos `.desktop` no diretório `~/.config/autostart/`
-- Cada instância tem seu próprio arquivo de configuração
-- Funciona com qualquer ambiente desktop que suporte XDG Autostart
-- As instâncias são isoladas e usam seus próprios diretórios de configuração
+- Creates `.desktop` files in the `~/.config/autostart/` directory
+- Each instance has its own configuration file
+- Works with any desktop environment that supports XDG Autostart
+- Instances are isolated and use their own configuration directories
 
-### Gerenciar configurações:
+### Manage configurations:
 
-- **Ativar**: Marque a instância na lista de configuração
-- **Desativar**: Desmarque a instância na lista de configuração
-- **Verificar status**: O status atual é mostrado na lista (Ativado/Desativado)
+- **Enable**: Check the instance in the configuration list
+- **Disable**: Uncheck the instance in the configuration list
+- **Check status**: Current status is shown in the list (Enabled/Disabled)
 
-## Nomenclatura Recomendada*: Funciona automaticamente em Debian, Ubuntu, Fedora e Arch Linux
-- **Interface Gráfica**: Usa Zenity para uma experiência amigável
-- **Instâncias Isoladas**: Cada instância tem seu próprio diretório de configuração
-- **Gerenciamento Dinâmico**: Adicione novas instâncias diretamente pela interface
-- **Persistência**: Instâncias adicionadas são salvas automaticamente
-- **Inicialização Automática**: Configure quais instâncias iniciam com o sistemaMulti-Instance Manager
+## Recommended Naming: Works automatically on Debian, Ubuntu, Fedora and Arch Linux
+- **Graphical Interface**: Uses Zenity for a user-friendly experience
+- **Isolated Instances**: Each instance has its own configuration directory
+- **Dynamic Management**: Add new instances directly through the interface
+- **Persistence**: Added instances are automatically saved
+- **Automatic Startup**: Configure which instances start with the system
 
-Script distro-agnostic para gerenciar múltiplas instâncias do MEGASync em diferentes contas MEGA.
+## MEGASync Multi-Instance Manager
 
-## Características
+Distro-agnostic script for managing multiple MEGASync instances on different MEGA accounts.
 
-- **Distro-Agnostic**: Funciona automaticamente em Debian, Ubuntu, Fedora e Arch Linux
-- **Interface Gráfica**: Usa Zenity para uma experiência amigável
-- **Instâncias Isoladas**: Cada instância tem seu próprio diretório de configuração
-- **Gerenciamento Dinâmico**: Adicione novas instâncias diretamente pela interface
-- **Persistência**: Instâncias adicionadas são salvas automaticamente
+## Features
 
-## Distribuições Suportadas
+- **Distro-Agnostic**: Works automatically on Debian, Ubuntu, Fedora and Arch Linux
+- **Graphical Interface**: Uses Zenity for a user-friendly experience
+- **Isolated Instances**: Each instance has its own configuration directory
+- **Dynamic Management**: Add new instances directly through the interface
+- **Persistence**: Added instances are automatically saved
 
-| Distribuição | Gerenciador | Pacotes | Funcionando? |
-|--------------|-------------|---------|--------------|
-| **Debian/Ubuntu/Mint/Pop!_OS/Zorin** | `apt` | `megasync`, `zenity` | Sim |
-| **Fedora/RHEL/CentOS** | `dnf` | `megasync`, `zenity` | Sim |
-| **Arch/Manjaro/EndeavourOS** | `pacman` | `megasync`, `zenity` | Não testado |
+## Supported Distributions
+
+| Distribution | Manager | Packages | Working? |
+|--------------|---------|----------|----------|
+| **Debian/Ubuntu/Mint/Pop!_OS/Zorin** | `apt` | `megasync`, `zenity` | Yes |
+| **Fedora/RHEL/CentOS** | `dnf` | `megasync`, `zenity` | Yes |
+| **Arch/Manjaro/EndeavourOS** | `pacman` | `megasync`, `zenity` | Not tested |
 
 
-## Instalação Automática
+## Automatic Installation
 
-Execute o comando abaixo no terminal para instalar e configurar o alias automaticamente:
+Run the command below in the terminal to install and configure the alias automatically:
 
 ```bash
 wget -O - https://raw.githubusercontent.com/geraldohomero/megasync_multiple_instances/refs/heads/main/megasync-manager.sh | bash -s install
 ```
 
-Após a instalação, basta usar o comando:
+After installation, just use the command:
 
 ```bash
 mega
 ```
 
-O script detectará automaticamente sua distribuição e instalará as dependências necessárias.
+The script will automatically detect your distribution and install the necessary dependencies.
 
-## Nomenclatura Recomendada
+## Recommended Naming
 
-- **Instâncias:** `MEGASync_Instance_1`, `MEGASync_Instance_2`, etc.
-- **Diretórios:** `~/.config/MEGASync_Instance_1`, `~/.config/MEGASync_Instance_2`, etc.
+- **Instances:** `MEGASync_Instance_1`, `MEGASync_Instance_2`, etc.
+- **Directories:** `~/.config/MEGASync_Instance_1`, `~/.config/MEGASync_Instance_2`, etc.
 
-## Configuração Manual
+## Manual Configuration
 
-Edite a seção `INSTÂNCIAS` no script para adicionar suas instâncias:
+Edit the `INSTANCES` section in the script to add your instances:
 
 ```bash
 declare -A CONTAS=(
     ["MEGASync_Instance_1"]="$HOME/.config/MEGASync_Instance_1"
     ["MEGASync_Instance_2"]="$HOME/.config/MEGASync_Instance_2"
-    # Adicione mais instâncias aqui
+    # Add more instances here
 )
 ```
 
-## Notas Importantes
+## Important Notes
 
-### Permissões
-Certifique-se de que o usuário tem permissões para:
-- Executar `sudo` (para instalação de pacotes)
-- Criar diretórios em `~/.config/`
-- Executar aplicações gráficas
+### Permissions
+Make sure the user has permissions to:
+- Execute `sudo` (for package installation)
+- Create directories in `~/.config/`
+- Execute graphical applications
 
-### Isolamento
-Cada instância do MEGASync usa um diretório de configuração separado, garantindo isolamento completo entre as contas.
+### Isolation
+Each MEGASync instance uses a separate configuration directory, ensuring complete isolation between accounts.
 
 ## Troubleshooting
 
-### Script não detecta a distribuição
-Se o script não conseguir detectar sua distribuição, ele tentará detectar automaticamente o gerenciador de pacotes disponível.
+### Script does not detect the distribution
+If the script cannot detect your distribution, it will try to automatically detect the available package manager.
 
-### MEGASync não inicia
-Verifique se:
-- O diretório de configuração existe e tem permissões corretas
-- Não há conflitos com outras instâncias rodando
-- As dependências estão instaladas corretamente
+### MEGASync does not start
+Check if:
+- The configuration directory exists and has correct permissions
+- There are no conflicts with other running instances
+- Dependencies are installed correctly
 
-### Interface gráfica não aparece
-Certifique-se de que:
-- Você está em um ambiente gráfico (X11 ou Wayland)
-- O Zenity está instalado
-- As variáveis de ambiente DISPLAY estão configuradas
+### Graphical interface does not appear
+Make sure that:
+- You are in a graphical environment (X11 or Wayland)
+- Zenity is installed
+- DISPLAY environment variables are configured
 
-### Inicialização Automática
-Se as instâncias não estiverem iniciando automaticamente:
+### Automatic Startup
+If instances are not starting automatically:
 
-- **Verifique os arquivos**: Os arquivos `.desktop` devem estar em `~/.config/autostart/`
-- **Permissões**: Certifique-se de que os arquivos têm permissão de execução
-- **Ambiente Desktop**: Alguns ambientes podem ignorar arquivos `.desktop` corrompidos
-- **Teste manual**: Execute o arquivo `.desktop` manualmente para testar
-- **Logs**: Verifique os logs do sistema para mensagens de erro
+- **Check files**: `.desktop` files should be in `~/.config/autostart/`
+- **Permissions**: Make sure files have execute permission
+- **Desktop Environment**: Some environments may ignore corrupted `.desktop` files
+- **Manual test**: Execute the `.desktop` file manually to test
+- **Logs**: Check system logs for error messages
 
-### Comando para testar:
+### Test command:
 ```bash
-# Listar arquivos de inicialização
+# List startup files
 ls -la ~/.config/autostart/megasync-*
 
-# Executar manualmente um arquivo .desktop
+# Execute manually a .desktop file
 gtk-launch ~/.config/autostart/megasync-MEGASync_Instance_1.desktop
 ```
 
-## Contribuições
+## Contributions
 
-Contribuições são bem-vindas! Sinta-se à vontade para:
-- Reportar bugs
-- Sugerir melhorias
-- Adicionar suporte para novas distribuições
-- Traduzir para outros idiomas
+Contributions are welcome! Feel free to:
+- Report bugs
+- Suggest improvements
+- Add support for new distributions
+- Translate to other languages
 
-## Suporte
+## Support
 
-Para suporte ou dúvidas:
-- Abra uma issue no repositório
-- Verifique os logs do script para mensagens de erro
-- Certifique-se de que todas as dependências estão instaladas
+For support or questions:
+- Open an issue in the repository
+- Check script logs for error messages
+- Make sure all dependencies are installed
