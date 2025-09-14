@@ -49,29 +49,49 @@ detect_lang() {
     esac
 }
 
-# Message function
+
+# === COLOR OUTPUT ===
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Message function with color
 msg() {
+    local type="$1"
+    local custom="$2"
+    local color="$NC"
+    case "$type" in
+        install_success|alias_added|copying_script|chmod_script|sourcing_alias)
+            color="$GREEN" ;;
+        already_installed)
+            color="$YELLOW" ;;
+        error|fail|fatal)
+            color="$RED" ;;
+    esac
     case "$LANG_CODE" in
         pt-br)
-            case "$1" in
-                install_success) echo "Instalação concluída! Use o comando 'mega' para iniciar o gerenciador de instâncias MEGAsync.";;
-                alias_added) echo "Alias 'mega' adicionado em ~/.bash_aliases.";;
-                already_installed) echo "O script já está instalado em ~/megasync-manager.sh.";;
-                copying_script) echo "Copiando script para ~/megasync-manager.sh...";;
-                chmod_script) echo "Definindo permissão de execução...";;
-                sourcing_alias) echo "Atualizando aliases do bash...";;
-                *) echo "$2";;
+            case "$type" in
+                install_success) echo -e "${color}Instalação concluída! Use o comando 'mega' para iniciar o gerenciador de instâncias MEGAsync.${NC}";;
+                alias_added) echo -e "${color}Alias 'mega' adicionado em ~/.bash_aliases.${NC}";;
+                already_installed) echo -e "${color}O script já está instalado em ~/megasync-manager.sh.${NC}";;
+                copying_script) echo -e "${color}Copiando script para ~/megasync-manager.sh...${NC}";;
+                chmod_script) echo -e "${color}Definindo permissão de execução...${NC}";;
+                sourcing_alias) echo -e "${color}Atualizando aliases do bash...${NC}";;
+                error) echo -e "${color}${custom}${NC}";;
+                *) echo -e "${color}${custom}${NC}";;
             esac
             ;;
         en-us)
-            case "$1" in
-                install_success) echo "Installation complete! Use the 'mega' command to start the MEGAsync instance manager.";;
-                alias_added) echo "Alias 'mega' added to ~/.bash_aliases.";;
-                already_installed) echo "Script is already installed at ~/megasync-manager.sh.";;
-                copying_script) echo "Copying script to ~/megasync-manager.sh...";;
-                chmod_script) echo "Setting executable permission...";;
-                sourcing_alias) echo "Reloading bash aliases...";;
-                *) echo "$2";;
+            case "$type" in
+                install_success) echo -e "${color}Installation complete! Use the 'mega' command to start the MEGAsync instance manager.${NC}";;
+                alias_added) echo -e "${color}Alias 'mega' added to ~/.bash_aliases.${NC}";;
+                already_installed) echo -e "${color}Script is already installed at ~/megasync-manager.sh.${NC}";;
+                copying_script) echo -e "${color}Copying script to ~/megasync-manager.sh...${NC}";;
+                chmod_script) echo -e "${color}Setting executable permission...${NC}";;
+                sourcing_alias) echo -e "${color}Reloading bash aliases...${NC}";;
+                error) echo -e "${color}${custom}${NC}";;
+                *) echo -e "${color}${custom}${NC}";;
             esac
             ;;
     esac
