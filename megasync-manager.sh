@@ -99,7 +99,7 @@ if [[ "$1" == "install" ]]; then
     exec bash
 fi
 
-declare -A CONTAS=(
+declare -A INSTANCES=(
     ["MEGASync_Instance_1"]="$HOME/.config/MEGASync_Instance_1"
     # Add more instances here if necessary
     # ["MEGASync_Instance_2"]="$HOME/.config/MEGASync_Instance_2"
@@ -257,33 +257,33 @@ echo ""
 check_and_install "megasync" "$MEGASYNC_PACKAGE"
 check_and_install "zenity" "$ZENITY_PACKAGE"
 
-# Definir comandos padrão se não foram definidos
+# Define default commands if not defined
 MEGASYNC_CMD=${MEGASYNC_CMD:-megasync}
 ZENITY_CMD=${ZENITY_CMD:-zenity}
 
 # File to save dynamically added instances
-CONTAS_FILE="$HOME/.config/megasync_accounts.conf"
+INSTANCES_FILE="$HOME/.config/megasync_accounts.conf"
 
-# Diretório para arquivos de inicialização automática
+# Directory for automatic startup files
 AUTOSTART_DIR="$HOME/.config/autostart"
 
 # Load saved instances if file exists
-if [ -f "$CONTAS_FILE" ]; then
+if [ -f "$INSTANCES_FILE" ]; then
     while IFS='=' read -r name path; do
         if [ -n "$name" ] && [ -n "$path" ]; then
-            CONTAS["$name"]="$path"
+            INSTANCES["$name"]="$path"
         fi
-    done < "$CONTAS_FILE"
+    done < "$INSTANCES_FILE"
 fi
 
-# Função para verificar se uma instância está configurada para iniciar automaticamente
+# Function to check if an instance is configured to start automatically
 is_autostart_enabled() {
     local instance_name="$1"
     local desktop_file="$AUTOSTART_DIR/megasync-${instance_name// /_}.desktop"
     [ -f "$desktop_file" ]
 }
 
-# Função para criar arquivo .desktop para inicialização automática
+# Function to create .desktop file for automatic startup
 create_autostart_desktop() {
     local instance_name="$1"
     local config_path="$2"
@@ -315,7 +315,7 @@ EOF
     chmod +x "$desktop_file"
 }
 
-# Função para remover arquivo .desktop de inicialização automática
+# Function to remove .desktop file for automatic startup
 remove_autostart_desktop() {
     local instance_name="$1"
     local desktop_file="$AUTOSTART_DIR/megasync-${instance_name// /_}.desktop"
@@ -328,7 +328,7 @@ configure_autostart() {
     
     # Build list of instances with current status
     local autostart_options=""
-    for instance_name in "${!CONTAS[@]}"; do
+    for instance_name in "${!INSTANCES[@]}"; do
         if is_autostart_enabled "$instance_name"; then
             autostart_options+="TRUE \"$instance_name (Enabled)\" "
         else
@@ -378,7 +378,7 @@ configure_autostart() {
     
     # Update automatic startup configuration
     local changes_made=false
-    for instance_name in "${!CONTAS[@]}"; do
+    for instance_name in "${!INSTANCES[@]}"; do
         local should_enable=false
         
         # Check if this instance should be enabled
@@ -391,7 +391,7 @@ configure_autostart() {
         
         if $should_enable; then
             if ! is_autostart_enabled "$instance_name"; then
-                create_autostart_desktop "$instance_name" "${CONTAS[$instance_name]}"
+                create_autostart_desktop "$instance_name" "${INSTANCES[$instance_name]}"
                 changes_made=true
                 echo "Automatic startup ENABLED for: $instance_name"
             fi
@@ -414,13 +414,13 @@ configure_autostart() {
 # Function to add new instance
 add_account() {
     # Calculate the next number for MEGASync_Instance
-    numero_conta=1
-    while [ "${CONTAS[MEGASync_Instance_$numero_conta]}" ]; do
-        ((numero_conta++))
+    account_number=1
+    while [ "${INSTANCES[MEGASync_Instance_$account_number]}" ]; do
+        ((account_number++))
     done
     
     # Default account name
-    default_name="MEGASync_Instance_$numero_conta"
+    default_name="MEGASync_Instance_$account_number"
     
     # Dialog for account name
     account_name=$($ZENITY_CMD --entry \
@@ -440,13 +440,13 @@ add_account() {
     fi
     
     # Check if it already exists
-    if [ "${CONTAS[$account_name]}" ]; then
+    if [ "${INSTANCES[$account_name]}" ]; then
         $ZENITY_CMD --error --text="An instance with this name already exists!" --width=400 --height=100
         return 1
     fi
     
     # Default path based on account name
-    default_path="$HOME/.config/MEGASync_Instance_$numero_conta"
+    default_path="$HOME/.config/MEGASync_Instance_$account_number"
     
     # Dialog for config path
     config_path=$($ZENITY_CMD --entry \
@@ -470,10 +470,10 @@ add_account() {
     fi
     
     # Add to array
-    CONTAS["$account_name"]="$config_path"
+    INSTANCES["$account_name"]="$config_path"
     
     # Save to file
-    echo "$account_name=$config_path" >> "$CONTAS_FILE"
+    echo "$account_name=$config_path" >> "$INSTANCES_FILE"
     
     $ZENITY_CMD --info --text="Instance '$account_name' added successfully!" --width=400 --height=100
     return 0
@@ -481,7 +481,7 @@ add_account() {
 
 # 2. Build arguments for zenity dialog
 zenity_args=()
-for account_name in "${!CONTAS[@]}"; do
+for account_name in "${!INSTANCES[@]}"; do
     zenity_args+=(FALSE "$account_name")
 done
 # Add option to add new instance
@@ -532,7 +532,7 @@ while true; do
         if configure_autostart; then
             # Rebuild list with new instance
             zenity_args=()
-            for account_name in "${!CONTAS[@]}"; do
+            for account_name in "${!INSTANCES[@]}"; do
                 zenity_args+=(FALSE "$account_name")
             done
             zenity_args+=(FALSE "Add new instance...")
@@ -549,7 +549,7 @@ while true; do
         if add_account; then
             # Rebuild list with new instance
             zenity_args=()
-            for account_name in "${!CONTAS[@]}"; do
+            for account_name in "${!INSTANCES[@]}"; do
                 zenity_args+=(FALSE "$account_name")
             done
             zenity_args+=(FALSE "Add new instance...")
@@ -569,7 +569,7 @@ done
 
 # 5. Start MEGASync for each selected instance
 for account in "${selected_accounts[@]}"; do
-    config_path="${CONTAS[$conta]}"
+    config_path="${INSTANCES[$conta]}"
     
     if [ -n "$config_path" ]; then
         echo "Starting MEGASync for instance: $conta"
