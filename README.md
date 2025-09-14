@@ -1,6 +1,6 @@
 # MEGASync Multi-Instance Manager
 
-Script distro-agn- **Persistência**: Instâncias adicionadas são salvas automaticamente
+**Persistência**: Instâncias adicionadas são salvas automaticamente
 
 ## Navegação na Interface
 
