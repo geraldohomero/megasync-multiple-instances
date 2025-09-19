@@ -17,7 +17,7 @@ A distro-agnostic script to manage multiple MEGASync instances for different MEG
 Run this command to install:
 
 ```bash
-wget -O - https://raw.githubusercontent.com/geraldohomero/megasync_multiple_instances/refs/heads/main/megasync-manager.sh | bash -s install
+wget -O - https://raw.githubusercontent.com/geraldohomero/megasync-multiple-instances/refs/heads/main/megasync-manager.sh | bash -s install
 ```
 
 Then use:
