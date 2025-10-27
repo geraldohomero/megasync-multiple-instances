@@ -11,7 +11,7 @@
 #
 # Author: https://github.com/geraldohomero
 #
-# Link: https://github.com/geraldohomero/megasync_multiple_instances
+# Link: https://github.com/geraldohomero/megasync-multiple-instances
 #
 # SUPPORTED DISTRIBUTIONS:
 # - Debian/Ubuntu/Mint/Pop!_OS/Zorin: apt
