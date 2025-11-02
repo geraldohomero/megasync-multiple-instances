@@ -1,5 +1,7 @@
 # MEGASync Multi-Instance Manager
 
+> 🇨🇳 [简体中文](https://github.com/geraldohomero/megasync-multiple-instances/blob/main/README.zh-cn.md)
+
 A distro-agnostic script to manage multiple MEGASync instances for different MEGA accounts.
 
 <img width="959" height="762" alt="image" src="https://github.com/user-attachments/assets/4d423bb1-6dc0-42c9-9815-56c188e8dad2" />
