@@ -38,10 +38,10 @@ The script detects your distro and installs dependencies (`megasync`, `zenity`).
 
 ## Configuration
 
-Edit the script's `CONTAS` array to add instances manually:
+Edit the script's `ACCOUNTS` array to add instances manually:
 
 ```bash
-declare -A CONTAS=(
+declare -A ACCOUNTS=(
     ["MEGASync_Instance_1"]="$HOME/.config/MEGASync_Instance_1"
     ["MEGASync_Instance_2"]="$HOME/.config/MEGASync_Instance_2"
 )
