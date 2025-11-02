@@ -36,10 +36,10 @@ mega
 
 ## 配置
 
-编辑脚本的 `CONTAS` 数组以手动添加实例：
+编辑脚本的 `ACCOUNTS` 数组以手动添加实例：
 
 ```bash
-declare -A CONTAS=(
+declare -A ACCOUNTS=(
     ["MEGASync_Instance_1"]="$HOME/.config/MEGASync_Instance_1"
     ["MEGASync_Instance_2"]="$HOME/.config/MEGASync_Instance_2"
 )
