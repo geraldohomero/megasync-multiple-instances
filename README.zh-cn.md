@@ -2,7 +2,7 @@
 
 一个与发行版无关的脚本，用于管理不同 MEGA 帐户的多个 MEGASync 实例。
 
-<img width="959" height="762" alt="image" src="https://github.com/user-attachments/assets/4d423bb1-6dc0-42c9-9815-56c188e8dad2" />
+<img width="893" height="607" alt="image" src="https://github.com/user-attachments/assets/7094ccb4-204c-4380-a9d2-a4f1172dea76" />
 
 ## 功能
 
