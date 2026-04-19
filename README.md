@@ -13,6 +13,7 @@ A distro-agnostic script to manage multiple MEGASync instances for different MEG
 - Isolated instances with separate config directories
 - Add instances dynamically
 - Persistent instance storage
+- Desktop launcher creation for new and existing instances
 
 ## Installation
 
@@ -35,6 +36,9 @@ The script detects your distro and installs dependencies (`megasync`, `zenity`).
 - Run `mega` to open the manager.
 - Select instances to start or add new ones.
 - Configure auto-startup for instances.
+- Configure desktop launchers for instances from the menu.
+- View a status table showing boot autostart and desktop launcher per instance.
+- Disable autostart for all managed instances with one click.
 
 ## Configuration
 

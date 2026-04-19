@@ -270,6 +270,9 @@ ACCOUNTS_FILE="$HOME/.config/megasync_accounts.conf"
 # Directory for autostart files
 AUTOSTART_DIR="$HOME/.config/autostart"
 
+# Directory for desktop launcher files
+DESKTOP_APPS_DIR="$HOME/.local/share/applications"
+
 # Load saved instances if the file exists
 if [ -f "$ACCOUNTS_FILE" ]; then
     while IFS='=' read -r name path; do
@@ -316,6 +319,53 @@ X-GNOME-Autostart-enabled=true
 EOF
     
     chmod +x "$desktop_file"
+}
+
+# Function to check if an instance has a desktop launcher
+is_desktop_app_enabled() {
+    local instance_name="$1"
+    local desktop_file="$DESKTOP_APPS_DIR/megasync-instance-${instance_name// /_}.desktop"
+    [ -f "$desktop_file" ]
+}
+
+# Function to create .desktop launcher for applications menu/desktop
+create_desktop_app_desktop() {
+    local instance_name="$1"
+    local config_path="$2"
+
+    mkdir -p "$DESKTOP_APPS_DIR"
+
+    local desktop_file="$DESKTOP_APPS_DIR/megasync-instance-${instance_name// /_}.desktop"
+    local exec_path=""
+
+    # Determine the executable path
+    if [ -n "$MEGASYNC_CMD" ]; then
+        exec_path="$MEGASYNC_CMD"
+    else
+        exec_path="megasync"
+    fi
+
+    cat > "$desktop_file" << EOF
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=MEGASync Instance ($instance_name)
+Exec=env HOME="$config_path" "$exec_path"
+Icon=megasync
+Comment=Launch MEGASync instance for $instance_name
+Terminal=false
+StartupNotify=true
+Categories=Network;FileTransfer;
+EOF
+
+    chmod +x "$desktop_file"
+}
+
+# Function to remove .desktop launcher
+remove_desktop_app_desktop() {
+    local instance_name="$1"
+    local desktop_file="$DESKTOP_APPS_DIR/megasync-instance-${instance_name// /_}.desktop"
+    [ -f "$desktop_file" ] && rm "$desktop_file"
 }
 
 # Function to remove .desktop file for autostart
@@ -414,6 +464,151 @@ configure_autostart() {
     fi
 }
 
+# Function to configure desktop launchers
+configure_desktop_apps() {
+    local title="Configure Desktop Apps"
+
+    # Build list of instances with current status
+    local desktop_options=""
+    for instance_name in "${!ACCOUNTS[@]}"; do
+        if is_desktop_app_enabled "$instance_name"; then
+            desktop_options+="TRUE \"$instance_name (Enabled)\" "
+        else
+            desktop_options+="FALSE \"$instance_name (Disabled)\" "
+        fi
+    done
+
+    # Remove trailing space
+    desktop_options=${desktop_options% }
+
+    # Show configuration dialog
+    local selections
+    selections=$(eval "$ZENITY_CMD --list \
+                        --title=\"$title\" \
+                        --text=\"Select the instances that should have a desktop launcher:\n\n• Check to create launcher\n• Uncheck to remove launcher\n• Click 'Back' to return to the main menu\" \
+                        --checklist \
+                        --column=\"Enable\" \
+                        --column=\"Instance\" \
+                        --width=650 --height=500 \
+                        --extra-button=\"Back\" \
+                        --ok-label=\"Apply\" \
+                        --cancel-label=\"Cancel\" \
+                        $desktop_options \
+                        --separator=\"|\"")
+
+    local exit_code=$?
+
+    # Check if the user clicked "Back" or canceled
+    if [ $exit_code -eq 1 ]; then
+        # User clicked "Back" - return to the main menu
+        return 0
+    elif [ $exit_code -ne 0 ]; then
+        # User canceled or closed the window
+        return 1
+    fi
+
+    # Process selections
+    IFS='|' read -ra selected_instances <<< "$selections"
+
+    # Extract only the instance names (remove "(Enabled)" and "(Disabled)")
+    local instances_to_enable=()
+    for selection in "${selected_instances[@]}"; do
+        local instance_name=$(echo "$selection" | sed 's/ (Enabled)//' | sed 's/ (Disabled)//')
+        instances_to_enable+=("$instance_name")
+    done
+
+    # Update desktop launcher configuration
+    local changes_made=false
+    for instance_name in "${!ACCOUNTS[@]}"; do
+        local should_enable=false
+
+        # Check if this instance should be enabled
+        for enabled_instance in "${instances_to_enable[@]}"; do
+            if [ "$enabled_instance" = "$instance_name" ]; then
+                should_enable=true
+                break
+            fi
+        done
+
+        if $should_enable; then
+            if ! is_desktop_app_enabled "$instance_name"; then
+                create_desktop_app_desktop "$instance_name" "${ACCOUNTS[$instance_name]}"
+                changes_made=true
+                echo "Desktop launcher ENABLED for: $instance_name"
+            fi
+        else
+            if is_desktop_app_enabled "$instance_name"; then
+                remove_desktop_app_desktop "$instance_name"
+                changes_made=true
+                echo "Desktop launcher DISABLED for: $instance_name"
+            fi
+        fi
+    done
+
+    if $changes_made; then
+        $ZENITY_CMD --info --text="Desktop launcher configuration updated successfully!" --width=500 --height=100
+    else
+        $ZENITY_CMD --info --text="No changes were made to the configuration." --width=500 --height=100
+    fi
+}
+
+# Function to display startup/launcher status per instance
+show_instances_status() {
+    local title="Instances Status"
+    local status_rows=()
+
+    for instance_name in "${!ACCOUNTS[@]}"; do
+        local autostart_status="No"
+        local desktop_status="No"
+
+        if is_autostart_enabled "$instance_name"; then
+            autostart_status="Yes"
+        fi
+
+        if is_desktop_app_enabled "$instance_name"; then
+            desktop_status="Yes"
+        fi
+
+        status_rows+=("$instance_name" "$autostart_status" "$desktop_status")
+    done
+
+    if [ ${#status_rows[@]} -eq 0 ]; then
+        $ZENITY_CMD --info --title="$title" --text="No instances configured yet." --width=420 --height=120
+        return 0
+    fi
+
+    $ZENITY_CMD --list \
+        --title="$title" \
+        --text="Startup and Desktop App status by instance:" \
+        --column="Instance" \
+        --column="Autostart on Boot" \
+        --column="Desktop App" \
+        --width=760 --height=420 \
+        "${status_rows[@]}"
+}
+
+# Function to disable autostart for all instances
+disable_all_autostart() {
+    if ! $ZENITY_CMD --question --title="Disable All Autostart" --text="Disable autostart for ALL instances?\n\nThis will remove all managed autostart entries." --width=500 --height=150; then
+        return 1
+    fi
+
+    local changes_made=false
+    for instance_name in "${!ACCOUNTS[@]}"; do
+        if is_autostart_enabled "$instance_name"; then
+            remove_autostart_desktop "$instance_name"
+            changes_made=true
+            echo "Autostart DISABLED for: $instance_name"
+        fi
+    done
+
+    if $changes_made; then
+        $ZENITY_CMD --info --text="All managed autostart entries were disabled successfully!" --width=520 --height=120
+    else
+        $ZENITY_CMD --info --text="No managed autostart entries were enabled." --width=480 --height=120
+    fi
+}
+
 # Function to add a new instance
 add_account() {
     # Calculate the next number for MEGASync_Instance
@@ -474,9 +669,19 @@ add_account() {
     
     # Add to the array
     ACCOUNTS["$account_name"]="$config_path"
+
+    # Ensure the configuration directory exists
+    mkdir -p "$config_path"
     
     # Save to the file
     echo "$account_name=$config_path" >> "$ACCOUNTS_FILE"
+
+    # Ask if user wants desktop launcher for the new instance
+    if $ZENITY_CMD --question --text="Do you want to create a desktop launcher for '$account_name'?\n\nThis lets you start the instance directly from your applications menu." --width=550 --height=150; then
+        create_desktop_app_desktop "$account_name" "$config_path"
+        $ZENITY_CMD --info --text="Instance '$account_name' added and desktop launcher created successfully!" --width=500 --height=100
+        return 0
+    fi
     
     $ZENITY_CMD --info --text="Instance '$account_name' added successfully!" --width=400 --height=100
     return 0
@@ -527,6 +732,9 @@ remove_instance() {
     
     # Remove from autostart
     remove_autostart_desktop "$instance_to_remove"
+
+    # Remove desktop launcher
+    remove_desktop_app_desktop "$instance_to_remove"
     
     # Remove from the array
     unset ACCOUNTS["$instance_to_remove"]
@@ -552,6 +760,12 @@ zenity_args+=(FALSE "Add new instance...")
 zenity_args+=(FALSE "Remove instance...")
 # Add option to configure autostart
 zenity_args+=(FALSE "Configure autostart...")
+# Add option to configure desktop launchers
+zenity_args+=(FALSE "Configure desktop apps...")
+# Add option to view status
+zenity_args+=(FALSE "Show instances status...")
+# Add option to disable all autostart
+zenity_args+=(FALSE "Disable all autostart...")
 
 # Main loop for account selection
 while true; do
@@ -580,6 +794,9 @@ while true; do
     add_selected=false
     remove_selected=false
     configure_autostart_selected=false
+    configure_desktop_apps_selected=false
+    show_status_selected=false
+    disable_all_autostart_selected=false
     
     for account in "${selected_accounts[@]}"; do
         if [ "$account" = "Add new instance..." ]; then
@@ -588,6 +805,12 @@ while true; do
             remove_selected=true
         elif [ "$account" = "Configure autostart..." ]; then
             configure_autostart_selected=true
+        elif [ "$account" = "Configure desktop apps..." ]; then
+            configure_desktop_apps_selected=true
+        elif [ "$account" = "Show instances status..." ]; then
+            show_status_selected=true
+        elif [ "$account" = "Disable all autostart..." ]; then
+            disable_all_autostart_selected=true
         fi
     done
 
@@ -605,8 +828,72 @@ while true; do
             zenity_args+=(FALSE "Add new instance...")
             zenity_args+=(FALSE "Remove instance...")
             zenity_args+=(FALSE "Configure autostart...")
+            zenity_args+=(FALSE "Configure desktop apps...")
+            zenity_args+=(FALSE "Show instances status...")
+            zenity_args+=(FALSE "Disable all autostart...")
             continue  # Go back to the loop to show the updated list
         fi
+    fi
+
+    if [ "$configure_desktop_apps_selected" = true ]; then
+        # Remove "Configure desktop apps" from the list of selected
+        selected_accounts=("${selected_accounts[@]/Configure desktop apps...}")
+
+        # Configure desktop launchers
+        if configure_desktop_apps; then
+            # Rebuild the list
+            zenity_args=()
+            for account_name in "${!ACCOUNTS[@]}"; do
+                zenity_args+=(FALSE "$account_name")
+            done
+            zenity_args+=(FALSE "Add new instance...")
+            zenity_args+=(FALSE "Remove instance...")
+            zenity_args+=(FALSE "Configure autostart...")
+            zenity_args+=(FALSE "Configure desktop apps...")
+            zenity_args+=(FALSE "Show instances status...")
+            zenity_args+=(FALSE "Disable all autostart...")
+            continue  # Go back to the loop to show the updated list
+        fi
+    fi
+
+    if [ "$show_status_selected" = true ]; then
+        # Remove "Show instances status" from the list of selected
+        selected_accounts=("${selected_accounts[@]/Show instances status...}")
+
+        show_instances_status
+
+        # Rebuild the list
+        zenity_args=()
+        for account_name in "${!ACCOUNTS[@]}"; do
+            zenity_args+=(FALSE "$account_name")
+        done
+        zenity_args+=(FALSE "Add new instance...")
+        zenity_args+=(FALSE "Remove instance...")
+        zenity_args+=(FALSE "Configure autostart...")
+        zenity_args+=(FALSE "Configure desktop apps...")
+        zenity_args+=(FALSE "Show instances status...")
+        zenity_args+=(FALSE "Disable all autostart...")
+        continue  # Go back to the loop to show the menu again
+    fi
+
+    if [ "$disable_all_autostart_selected" = true ]; then
+        # Remove "Disable all autostart" from the list of selected
+        selected_accounts=("${selected_accounts[@]/Disable all autostart...}")
+
+        disable_all_autostart
+
+        # Rebuild the list
+        zenity_args=()
+        for account_name in "${!ACCOUNTS[@]}"; do
+            zenity_args+=(FALSE "$account_name")
+        done
+        zenity_args+=(FALSE "Add new instance...")
+        zenity_args+=(FALSE "Remove instance...")
+        zenity_args+=(FALSE "Configure autostart...")
+        zenity_args+=(FALSE "Configure desktop apps...")
+        zenity_args+=(FALSE "Show instances status...")
+        zenity_args+=(FALSE "Disable all autostart...")
+        continue  # Go back to the loop to show the menu again
     fi
 
     if [ "$add_selected" = true ]; then
@@ -623,6 +910,9 @@ while true; do
             zenity_args+=(FALSE "Add new instance...")
             zenity_args+=(FALSE "Remove instance...")
             zenity_args+=(FALSE "Configure autostart...")
+            zenity_args+=(FALSE "Configure desktop apps...")
+            zenity_args+=(FALSE "Show instances status...")
+            zenity_args+=(FALSE "Disable all autostart...")
             continue  # Go back to the loop to show the updated list
         fi
     fi
@@ -641,6 +931,9 @@ while true; do
             zenity_args+=(FALSE "Add new instance...")
             zenity_args+=(FALSE "Remove instance...")
             zenity_args+=(FALSE "Configure autostart...")
+            zenity_args+=(FALSE "Configure desktop apps...")
+            zenity_args+=(FALSE "Show instances status...")
+            zenity_args+=(FALSE "Disable all autostart...")
             continue  # Go back to the loop to show the updated list
         fi
     fi
